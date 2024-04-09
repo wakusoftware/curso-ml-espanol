@@ -24,13 +24,13 @@ def plt_house_x(X, y,f_wb=None, ax=None):
     ''' plot house with aXis '''
     if not ax:
         fig, ax = plt.subplots(1,1)
-    ax.scatter(X, y, marker='x', c='r', label="Actual Value")
+    ax.scatter(X, y, marker='x', c='r', label="Valor actual")
 
-    ax.set_title("Housing Prices")
-    ax.set_ylabel('Price (in 1000s of dollars)')
-    ax.set_xlabel(f'Size (1000 sqft)')
+    ax.set_title("Precios de Viviendas")
+    ax.set_ylabel('Precio (en 1000s de dólares)')
+    ax.set_xlabel(f'Tamaño (1000 pies cuadradados)')
     if f_wb is not None:
-        ax.plot(X, f_wb,  c=dlblue, label="Our Prediction")
+        ax.plot(X, f_wb,  c=dlblue, label="Nuestra Predicción")
     ax.legend()
 
 
@@ -89,11 +89,11 @@ def plt_intuition(x_train, y_train):
         ax[1].scatter(w,cur_cost, s=100, color=dldarkred, zorder= 10, label= f"cost at w={w}")
         ax[1].hlines(cur_cost, ax[1].get_xlim()[0],w, lw=4, color=dlpurple, ls='dotted')
         ax[1].vlines(w, ax[1].get_ylim()[0],cur_cost, lw=4, color=dlpurple, ls='dotted')
-        ax[1].set_title("Cost vs. w, (b fixed at 100)")
-        ax[1].set_ylabel('Cost')
+        ax[1].set_title("Costo vs. w, (b fijo en 100)")
+        ax[1].set_ylabel('Costo')
         ax[1].set_xlabel('w')
         ax[1].legend(loc='upper center')
-        fig.suptitle(f"Minimize Cost: Current Cost = {cur_cost:0.0f}", fontsize=12)
+        fig.suptitle(f"Minimizar Costo: Costo Actual = {cur_cost:0.0f}", fontsize=12)
         plt.show()
 
 # this is the 2D cost curve with interactive slider
@@ -132,14 +132,14 @@ def plt_stationary(x_train, y_train):
 
     ### plot contour ###
     CS = ax[1].contour(tmp_w, tmp_b, np.log(z),levels=12, linewidths=2, alpha=0.7,colors=dlcolors)
-    ax[1].set_title('Cost(w,b)')
+    ax[1].set_title('Costo(w,b)')
     ax[1].set_xlabel('w', fontsize=10)
     ax[1].set_ylabel('b', fontsize=10)
     ax[1].set_xlim(w_range) ; ax[1].set_ylim(b_range)
-    cscat  = ax[1].scatter(w0,b, s=100, color=dlblue, zorder= 10, label="cost with \ncurrent w,b")
+    cscat  = ax[1].scatter(w0,b, s=100, color=dlblue, zorder= 10, label="cosot con \nactual w,b")
     chline = ax[1].hlines(b, ax[1].get_xlim()[0],w0, lw=4, color=dlpurple, ls='dotted')
     cvline = ax[1].vlines(w0, ax[1].get_ylim()[0],b, lw=4, color=dlpurple, ls='dotted')
-    ax[1].text(0.5,0.95,"Click to choose w,b",  bbox=dict(facecolor='white', ec = 'black'), fontsize = 10,
+    ax[1].text(0.5,0.95,"Haz clic para elegir w,b",  bbox=dict(facecolor='white', ec = 'black'), fontsize = 10,
                 transform=ax[1].transAxes, verticalalignment = 'center', horizontalalignment= 'center')
 
     #Surface plot of the cost function J(w,b)
@@ -152,7 +152,7 @@ def plt_stationary(x_train, y_train):
     ax[2].yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax[2].zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax[2].set_zlabel("J(w, b)\n\n", rotation=90)
-    plt.title("Cost(w,b) \n [You can rotate this figure]", size=12)
+    plt.title("Costo(w,b) \n [Puedes rotar esta figura]", size=12)
     ax[2].view_init(30, -120)
 
     return fig,ax, [cscat, chline, cvline]
@@ -184,7 +184,7 @@ class plt_update_onclick:
             for artist in self.dyn_items:
                 artist.remove()
 
-            a = self.ax[1].scatter(ws,bs, s=100, color=dlblue, zorder= 10, label="cost with \ncurrent w,b")
+            a = self.ax[1].scatter(ws,bs, s=100, color=dlblue, zorder= 10, label="costo con \nactual w,b")
             b = self.ax[1].hlines(bs, self.ax[1].get_xlim()[0],ws, lw=4, color=dlpurple, ls='dotted')
             c = self.ax[1].vlines(ws, self.ax[1].get_ylim()[0],bs, lw=4, color=dlpurple, ls='dotted')
             d = self.ax[1].annotate(f"Cost: {cst:.0f}", xy= (ws, bs), xytext = (4,4), textcoords = 'offset points',
@@ -232,7 +232,7 @@ def soup_bowl():
     ax.set_xlabel("$w$")
     ax.set_ylabel("$b$")
     ax.set_zlabel("$J(w,b)$", rotation=90)
-    ax.set_title("$J(w,b)$\n [You can rotate this figure]", size=15)
+    ax.set_title("$J(w,b)$\n [Puedes rotar esta figura]", size=15)
 
     plt.show()
 
@@ -259,7 +259,7 @@ def plt_contour_wgrad(x, y, hist, ax, w_range=[-100, 500, 5], b_range=[-500, 500
                    colors=[dlblue, dlorange, dldarkred, dlmagenta, dlpurple])
     ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=10)
     ax.set_xlabel("w");  ax.set_ylabel("b")
-    ax.set_title('Contour plot of cost J(w,b), vs b,w with path of gradient descent')
+    ax.set_title('Gráfico de contorno del costo J(w,b), vs b,w con el camino del descenso de gradiente')
     w = w_final; b=b_final
     ax.hlines(b, ax.get_xlim()[0],w, lw=2, color=dlpurple, ls='dotted')
     ax.vlines(w, ax.get_ylim()[0],b, lw=2, color=dlpurple, ls='dotted')
@@ -289,7 +289,7 @@ def plt_divergence(p_hist, J_hist, x_train,y_train):
     fig = plt.figure(figsize=(12,5))
     plt.subplots_adjust( wspace=0 )
     gs = fig.add_gridspec(1, 5)
-    fig.suptitle(f"Cost escalates when learning rate is too large")
+    fig.suptitle(f"El costo se incrementa cuando la tasa de aprendizaje es demasiado grande")
     #===============
     #  First subplot
     #===============
@@ -306,8 +306,8 @@ def plt_divergence(p_hist, J_hist, x_train,y_train):
 
     ax.plot(w_array, cost)
     ax.plot(x,v, c=dlmagenta)
-    ax.set_title("Cost vs w, b set to 100")
-    ax.set_ylabel('Cost')
+    ax.set_title("Costo vs w, b establecido en 100")
+    ax.set_ylabel('Costo')
     ax.set_xlabel('w')
     ax.xaxis.set_major_locator(MaxNLocator(2))
 
@@ -331,7 +331,7 @@ def plt_divergence(p_hist, J_hist, x_train,y_train):
     ax.set_xlabel('w', fontsize=16)
     ax.set_ylabel('b', fontsize=16)
     ax.set_zlabel('\ncost', fontsize=16)
-    plt.title('Cost vs (b, w)')
+    plt.title('Costo vs (b, w)')
     # Customize the view angle
     ax.view_init(elev=20., azim=-65)
     ax.plot(x, y, v,c=dlmagenta)
@@ -368,7 +368,7 @@ def plt_gradients(x_train,y_train, f_compute_cost, f_compute_gradient):
         tmp_w = w_array[i]
         cost[i] = f_compute_cost(x_train, y_train, tmp_w, fix_b)
     ax[0].plot(w_array, cost,linewidth=1)
-    ax[0].set_title("Cost vs w, with gradient; b set to 100")
+    ax[0].set_title("Costo vs w, con gradiente; b establecido en 100")
     ax[0].set_ylabel('Cost')
     ax[0].set_xlabel('w')
 
@@ -394,7 +394,7 @@ def plt_gradients(x_train,y_train, f_compute_cost, f_compute_gradient):
     n=-2
     color_array = np.sqrt(((V-n)/2)**2 + ((U-n)/2)**2)
 
-    ax[1].set_title('Gradient shown in quiver plot')
+    ax[1].set_title('Gradiente mostrado en el gráfico de quiver')
     Q = ax[1].quiver(X, Y, U, V, color_array, units='width', )
     ax[1].quiverkey(Q, 0.9, 0.9, 2, r'$2 \frac{m}{s}$', labelpos='E',coordinates='figure')
     ax[1].set_xlabel("w"); ax[1].set_ylabel("b")
