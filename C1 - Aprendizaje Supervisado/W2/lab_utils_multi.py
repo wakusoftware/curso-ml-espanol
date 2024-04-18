@@ -18,41 +18,40 @@ def load_data_multi():
 # Plotting Routines
 ##########################################################
 
-def plt_house_x(X, y,f_wb=None, ax=None):
-    ''' plot house with aXis '''
+def plt_house_x(X, y, f_wb=None, ax=None):
+    ''' grafica precios de viviendas con un eje '''
     if not ax:
-        fig, ax = plt.subplots(1,1)
-    ax.scatter(X, y, marker='x', c='r', label="Actual Value")
+        fig, ax = plt.subplots(1, 1)
+    ax.scatter(X, y, marker='x', color='r', label="Valor real")
 
-    ax.set_title("Housing Prices")
-    ax.set_ylabel('Price (in 1000s of dollars)')
-    ax.set_xlabel(f'Size (1000 sqft)')
+    ax.set_title("Precios de Viviendas")
+    ax.set_ylabel('Precio (en miles de dólares)')
+    ax.set_xlabel('Tamaño (1000 pies cuadrados)')
     if f_wb is not None:
-        ax.plot(X, f_wb,  c=dlblue, label="Our Prediction")
+        ax.plot(X, f_wb, color=dlblue, label="Nuestra predicción")
     ax.legend()
-    
 
-def mk_cost_lines(x,y,w,b, ax):
-    ''' makes vertical cost lines'''
-    cstr = "cost = (1/2m)*1000*("
+
+def mk_cost_lines(x, y, w, b, ax):
+    ''' crea líneas verticales de costo '''
+    cstr = "costo = (1/2m)*1000*("
     ctot = 0
-    label = 'cost for point'
-    for p in zip(x,y):
-        f_wb_p = w*p[0]+b
-        c_p = ((f_wb_p - p[1])**2)/2
-        c_p_txt = c_p/1000
-        ax.vlines(p[0], p[1],f_wb_p, lw=3, color=dlpurple, ls='dotted', label=label)
-        label='' #just one
-        cxy = [p[0], p[1] + (f_wb_p-p[1])/2]
-        ax.annotate(f'{c_p_txt:0.0f}', xy=cxy, xycoords='data',color=dlpurple, 
-            xytext=(5, 0), textcoords='offset points')
+    etiqueta = 'costo por punto'
+    for p in zip(x, y):
+        f_wb_p = w * p[0] + b
+        c_p = ((f_wb_p - p[1]) ** 2) / 2
+        c_p_txt = c_p / 1000
+        ax.vlines(p[0], p[1], f_wb_p, lw=3, color=dlpurple, ls='punteado', label=etiqueta)
+        etiqueta = ''  # solo uno
+        cxy = [p[0], p[1] + (f_wb_p - p[1]) / 2]
+        ax.annotate(f'{c_p_txt:0.0f}', xy=cxy, xycoords='data', color=dlpurple,
+                    xytext=(5, 0), textcoords='offset points')
         cstr += f"{c_p_txt:0.0f} +"
         ctot += c_p
-    ctot = ctot/(len(x))
+    ctot = ctot / (len(x))
     cstr = cstr[:-1] + f") = {ctot:0.0f}"
-    ax.text(0.15,0.02,cstr, transform=ax.transAxes, color=dlpurple)
-    
-    
+    ax.text(0.15, 0.02, cstr, transform=ax.transAxes, color=dlpurple)
+
 def inbounds(a,b,xlim,ylim):
     xlow,xhigh = xlim
     ylow,yhigh = ylim
@@ -65,36 +64,39 @@ def inbounds(a,b,xlim,ylim):
         return(False)
 
 from mpl_toolkits.mplot3d import axes3d
-def plt_contour_wgrad(x, y, hist, ax, w_range=[-100, 500, 5], b_range=[-500, 500, 5], 
-                contours = [0.1,50,1000,5000,10000,25000,50000], 
-                      resolution=5, w_final=200, b_final=100,step=10 ):
-    b0,w0 = np.meshgrid(np.arange(*b_range),np.arange(*w_range))
-    z=np.zeros_like(b0)
-    n,_ = w0.shape
+
+
+def plt_contour_wgrad(x, y, hist, ax, w_range=[-100, 500, 5], b_range=[-500, 500, 5],
+                      contours=[0.1, 50, 1000, 5000, 10000, 25000, 50000],
+                      resolution=5, w_final=200, b_final=100, step=10):
+    b0, w0 = np.meshgrid(np.arange(*b_range), np.arange(*w_range))
+    z = np.zeros_like(b0)
+    n, _ = w0.shape
     for i in range(w0.shape[0]):
         for j in range(w0.shape[1]):
-            z[i][j] = compute_cost(x, y, w0[i][j], b0[i][j] )
-   
+            z[i][j] = compute_cost(x, y, w0[i][j], b0[i][j])
+
     CS = ax.contour(w0, b0, z, contours, linewidths=2,
-                   colors=[dlblue, dlorange, dldarkred, dlmagenta, dlpurple]) 
+                    colors=[dlblue, dlorange, dldarkred, dlmagenta, dlpurple])
     ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=10)
-    ax.set_xlabel("w");  ax.set_ylabel("b")
-    ax.set_title('Contour plot of cost J(w,b), vs b,w with path of gradient descent')
-    w = w_final; b=b_final
-    ax.hlines(b, ax.get_xlim()[0],w, lw=2, color=dlpurple, ls='dotted')
-    ax.vlines(w, ax.get_ylim()[0],b, lw=2, color=dlpurple, ls='dotted')
+    ax.set_xlabel("w");
+    ax.set_ylabel("b")
+    ax.set_title('Gráfico de contorno del costo J(w,b), vs b,w con el camino del descenso del gradiente')
+    w = w_final;
+    b = b_final
+    ax.hlines(b, ax.get_xlim()[0], w, lw=2, color=dlpurple, ls='punteado')
+    ax.vlines(w, ax.get_ylim()[0], b, lw=2, color=dlpurple, ls='punteado')
 
     base = hist[0]
     for point in hist[0::step]:
-        edist = np.sqrt((base[0] - point[0])**2 + (base[1] - point[1])**2)
-        if(edist > resolution or point==hist[-1]):
-            if inbounds(point,base, ax.get_xlim(),ax.get_ylim()):
-                plt.annotate('', xy=point, xytext=base,xycoords='data',
-                         arrowprops={'arrowstyle': '->', 'color': 'r', 'lw': 3},
-                         va='center', ha='center')
-            base=point
+        edist = np.sqrt((base[0] - point[0]) ** 2 + (base[1] - point[1]) ** 2)
+        if (edist > resolution or point == hist[-1]):
+            if inbounds(point, base, ax.get_xlim(), ax.get_ylim()):
+                plt.annotate('', xy=point, xytext=base, xycoords='data',
+                             arrowprops={'arrowstyle': '->', 'color': 'r', 'lw': 3},
+                             va='center', ha='center')
+            base = point
     return
-
 
 # plots p1 vs p2. Prange is an array of entries [min, max, steps]. In feature scaling lab.
 def plt_contour_multi(x, y, w, b, ax, prange, p1, p2, title="", xlabel="", ylabel=""): 
@@ -120,54 +122,54 @@ def plt_contour_multi(x, y, w, b, ax, prange, p1, p2, title="", xlabel="", ylabe
 
 
 def plt_equal_scale(X_train, X_norm, y_train):
-    fig,ax = plt.subplots(1,2,figsize=(12,5))
+    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
     prange = [
-              [ 0.238-0.045, 0.238+0.045,  50],
-              [-25.77326319-0.045, -25.77326319+0.045, 50],
-              [-50000, 0,      50],
-              [-1500,  0,      50],
+              [0.238 - 0.045, 0.238 + 0.045, 50],
+              [-25.77326319 - 0.045, -25.77326319 + 0.045, 50],
+              [-50000, 0, 50],
+              [-1500, 0, 50],
               [0, 200000, 50]]
-    w_best = np.array([0.23844318, -25.77326319, -58.11084634,  -1.57727192])
+    w_best = np.array([0.23844318, -25.77326319, -58.11084634, -1.57727192])
     b_best = 235
-    plt_contour_multi(X_train, y_train, w_best, b_best, ax[0], prange, 0, 1, 
-                      title='Unnormalized, J(w,b), vs w[0],w[1]',
-                      xlabel= "w[0] (size(sqft))", ylabel="w[1] (# bedrooms)")
+    plt_contour_multi(X_train, y_train, w_best, b_best, ax[0], prange, 0, 1,
+                      title='Sin normalizar, J(w,b), vs w[0],w[1]',
+                      xlabel="w[0] (tamaño(pies cuadrados))", ylabel="w[1] (nº de habitaciones)")
     #
     w_best = np.array([111.1972, -16.75480051, -28.51530411, -37.17305735])
     b_best = 376.949151515151
-    prange = [[ 111-50, 111+50,   75],
-              [-16.75-50,-16.75+50, 75],
-              [-28.5-8, -28.5+8,  50],
-              [-37.1-16,-37.1+16, 50],
-              [376-150, 376+150, 50]]
-    plt_contour_multi(X_norm, y_train, w_best, b_best, ax[1], prange, 0, 1, 
-                      title='Normalized, J(w,b), vs w[0],w[1]',
-                      xlabel= "w[0] (normalized size(sqft))", ylabel="w[1] (normalized # bedrooms)")
-    fig.suptitle("Cost contour with equal scale", fontsize=18)
-    #plt.tight_layout(rect=(0,0,1.05,1.05))
-    fig.tight_layout(rect=(0,0,1,0.95))
+    prange = [[111 - 50, 111 + 50, 75],
+              [-16.75 - 50, -16.75 + 50, 75],
+              [-28.5 - 8, -28.5 + 8, 50],
+              [-37.1 - 16, -37.1 + 16, 50],
+              [376 - 150, 376 + 150, 50]]
+    plt_contour_multi(X_norm, y_train, w_best, b_best, ax[1], prange, 0, 1,
+                      title='Normalizado, J(w,b), vs w[0],w[1]',
+                      xlabel="w[0] (tamaño normalizado(pies cuadrados))", ylabel="w[1] (nº de habitaciones normalizadas)")
+    fig.suptitle("Contorno de costo con escala igual", fontsize=18)
+    # plt.tight_layout(rect=(0,0,1.05,1.05))
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
     plt.show()
-    
-def plt_divergence(p_hist, J_hist, x_train,y_train):
 
-    x=np.zeros(len(p_hist))
-    y=np.zeros(len(p_hist))
-    v=np.zeros(len(p_hist))
+
+def plt_divergence(p_hist, J_hist, x_train, y_train):
+    x = np.zeros(len(p_hist))
+    y = np.zeros(len(p_hist))
+    v = np.zeros(len(p_hist))
     for i in range(len(p_hist)):
         x[i] = p_hist[i][0]
         y[i] = p_hist[i][1]
         v[i] = J_hist[i]
 
-    fig = plt.figure(figsize=(12,5))
-    plt.subplots_adjust( wspace=0 )
+    fig = plt.figure(figsize=(12, 5))
+    plt.subplots_adjust(wspace=0)
     gs = fig.add_gridspec(1, 5)
-    fig.suptitle(f"Cost escalates when learning rate is too large")
-    #===============
-    #  First subplot
-    #===============
+    fig.suptitle(f"El costo escala cuando la tasa de aprendizaje es demasiado alta")
+    # ===============
+    #  Primer subplot
+    # ===============
     ax = fig.add_subplot(gs[:2], )
 
-    # Print w vs cost to see minimum
+    # Graficar w vs costo para ver el mínimo
     fix_b = 100
     w_array = np.arange(-70000, 70000, 1000)
     cost = np.zeros_like(w_array)
@@ -177,35 +179,35 @@ def plt_divergence(p_hist, J_hist, x_train,y_train):
         cost[i] = compute_cost(x_train, y_train, tmp_w, fix_b)
 
     ax.plot(w_array, cost)
-    ax.plot(x,v, c=dlmagenta)
-    ax.set_title("Cost vs w, b set to 100")
-    ax.set_ylabel('Cost')
+    ax.plot(x, v, color=dlmagenta)
+    ax.set_title("Costo vs w, b fijado a 100")
+    ax.set_ylabel('Costo')
     ax.set_xlabel('w')
-    ax.xaxis.set_major_locator(MaxNLocator(2)) 
+    ax.xaxis.set_major_locator(MaxNLocator(2))
 
-    #===============
-    # Second Subplot
-    #===============
+    # ===============
+    # Segundo Subplot
+    # ===============
 
-    tmp_b,tmp_w = np.meshgrid(np.arange(-35000, 35000, 500),np.arange(-70000, 70000, 500))
-    z=np.zeros_like(tmp_b)
+    tmp_b, tmp_w = np.meshgrid(np.arange(-35000, 35000, 500), np.arange(-70000, 70000, 500))
+    z = np.zeros_like(tmp_b)
     for i in range(tmp_w.shape[0]):
         for j in range(tmp_w.shape[1]):
-            z[i][j] = compute_cost(x_train, y_train, tmp_w[i][j], tmp_b[i][j] )
+            z[i][j] = compute_cost(x_train, y_train, tmp_w[i][j], tmp_b[i][j])
 
     ax = fig.add_subplot(gs[2:], projection='3d')
-    ax.plot_surface(tmp_w, tmp_b, z,  alpha=0.3, color=dlblue)
-    ax.xaxis.set_major_locator(MaxNLocator(2)) 
-    ax.yaxis.set_major_locator(MaxNLocator(2)) 
+    ax.plot_surface(tmp_w, tmp_b, z, alpha=0.3, color=dlblue)
+    ax.xaxis.set_major_locator(MaxNLocator(2))
+    ax.yaxis.set_major_locator(MaxNLocator(2))
 
     ax.set_xlabel('w', fontsize=16)
     ax.set_ylabel('b', fontsize=16)
-    ax.set_zlabel('\ncost', fontsize=16)
-    plt.title('Cost vs (b, w)')
-    # Customize the view angle 
+    ax.set_zlabel('\ncosto', fontsize=16)
+    plt.title('Costo vs (b, w)')
+    # Personalizar el ángulo de vista
     ax.view_init(elev=20., azim=-65)
-    ax.plot(x, y, v,c=dlmagenta)
-    
+    ax.plot(x, y, v, color=dlmagenta)
+
     return
 
 # draw derivative line
@@ -222,13 +224,13 @@ def add_line(dj_dx, x1, y1, d, ax):
             arrowprops=dict(arrowstyle="->"),
             horizontalalignment='left', verticalalignment='top')
 
-def plt_gradients(x_train,y_train, f_compute_cost, f_compute_gradient):
+def plt_gradients(x_train, y_train, f_compute_cost, f_compute_gradient):
     #===============
-    #  First subplot
+    #  Primer subplot
     #===============
-    fig,ax = plt.subplots(1,2,figsize=(12,4))
+    fig, ax = plt.subplots(1, 2, figsize=(12, 4))
 
-    # Print w vs cost to see minimum
+    # Graficar w vs costo para ver el mínimo
     fix_b = 100
     w_array = np.linspace(-100, 500, 50)
     w_array = np.linspace(0, 400, 50)
@@ -237,36 +239,36 @@ def plt_gradients(x_train,y_train, f_compute_cost, f_compute_gradient):
     for i in range(len(w_array)):
         tmp_w = w_array[i]
         cost[i] = f_compute_cost(x_train, y_train, tmp_w, fix_b)
-    ax[0].plot(w_array, cost,linewidth=1)
-    ax[0].set_title("Cost vs w, with gradient; b set to 100")
-    ax[0].set_ylabel('Cost')
+    ax[0].plot(w_array, cost, linewidth=1)
+    ax[0].set_title("Costo vs w, con gradiente; b fijado a 100")
+    ax[0].set_ylabel('Costo')
     ax[0].set_xlabel('w')
 
-    # plot lines for fixed b=100
-    for tmp_w in [100,200,300]:
+    # graficar líneas para b fijo=100
+    for tmp_w in [100, 200, 300]:
         fix_b = 100
-        dj_dw,dj_db = f_compute_gradient(x_train, y_train, tmp_w, fix_b )
+        dj_dw, dj_db = f_compute_gradient(x_train, y_train, tmp_w, fix_b)
         j = f_compute_cost(x_train, y_train, tmp_w, fix_b)
         add_line(dj_dw, tmp_w, j, 30, ax[0])
 
     #===============
-    # Second Subplot
+    # Segundo Subplot
     #===============
 
-    tmp_b,tmp_w = np.meshgrid(np.linspace(-200, 200, 10), np.linspace(-100, 600, 10))
+    tmp_b, tmp_w = np.meshgrid(np.linspace(-200, 200, 10), np.linspace(-100, 600, 10))
     U = np.zeros_like(tmp_w)
     V = np.zeros_like(tmp_b)
     for i in range(tmp_w.shape[0]):
         for j in range(tmp_w.shape[1]):
-            U[i][j], V[i][j] = f_compute_gradient(x_train, y_train, tmp_w[i][j], tmp_b[i][j] )
+            U[i][j], V[i][j] = f_compute_gradient(x_train, y_train, tmp_w[i][j], tmp_b[i][j])
     X = tmp_w
     Y = tmp_b
-    n=-2
-    color_array = np.sqrt(((V-n)/2)**2 + ((U-n)/2)**2)
+    n = -2
+    color_array = np.sqrt(((V - n) / 2) ** 2 + ((U - n) / 2) ** 2)
 
-    ax[1].set_title('Gradient shown in quiver plot')
-    Q = ax[1].quiver(X, Y, U, V, color_array, units='width', )
-    qk = ax[1].quiverkey(Q, 0.9, 0.9, 2, r'$2 \frac{m}{s}$', labelpos='E',coordinates='figure')
+    ax[1].set_title('Gradiente mostrado en un gráfico de vectores')
+    Q = ax[1].quiver(X, Y, U, V, color_array, units='width')
+    qk = ax[1].quiverkey(Q, 0.9, 0.9, 2, r'$2 \frac{m}{s}$', labelpos='E', coordinates='figure')
     ax[1].set_xlabel("w"); ax[1].set_ylabel("b")
 
 def norm_plot(ax, data):
@@ -284,18 +286,18 @@ def norm_plot(ax, data):
     axr.set_ylim(bottom=0)
     axr.axis('off')
     
-def plot_cost_i_w(X,y,hist):
-    ws = np.array([ p[0] for p in hist["params"]])
-    rng = max(abs(ws[:,0].min()),abs(ws[:,0].max()))
-    wr = np.linspace(-rng+0.27,rng+0.27,20)
-    cst = [compute_cost(X,y,np.array([wr[i],-32, -67, -1.46]), 221) for i in range(len(wr))]
+def plot_cost_i_w(X, y, hist):
+    ws = np.array([p[0] for p in hist["params"]])
+    rng = max(abs(ws[:,0].min()), abs(ws[:,0].max()))
+    wr = np.linspace(-rng + 0.27, rng + 0.27, 20)
+    cst = [compute_cost(X, y, np.array([wr[i], -32, -67, -1.46]), 221) for i in range(len(wr))]
 
-    fig,ax = plt.subplots(1,2,figsize=(12,3))
-    ax[0].plot(hist["iter"], (hist["cost"]));  ax[0].set_title("Cost vs Iteration")
-    ax[0].set_xlabel("iteration"); ax[0].set_ylabel("Cost")
-    ax[1].plot(wr, cst); ax[1].set_title("Cost vs w[0]")
-    ax[1].set_xlabel("w[0]"); ax[1].set_ylabel("Cost")
-    ax[1].plot(ws[:,0],hist["cost"])
+    fig, ax = plt.subplots(1, 2, figsize=(12, 3))
+    ax[0].plot(hist["iter"], (hist["cost"]));  ax[0].set_title("Costo vs Iteración")
+    ax[0].set_xlabel("iteración"); ax[0].set_ylabel("Costo")
+    ax[1].plot(wr, cst); ax[1].set_title("Costo vs w[0]")
+    ax[1].set_xlabel("w[0]"); ax[1].set_ylabel("Costo")
+    ax[1].plot(ws[:,0], hist["cost"])
     plt.show()
 
  
@@ -395,78 +397,85 @@ def compute_gradient(X, y, w, b):
         
     return dj_db,dj_dw
 
-#This version saves more values and is more verbose than the assigment versons
-def gradient_descent_houses(X, y, w_in, b_in, cost_function, gradient_function, alpha, num_iters): 
-    """
-    Performs batch gradient descent to learn theta. Updates theta by taking 
-    num_iters gradient steps with learning rate alpha
-    
-    Args:
-      X : (array_like Shape (m,n)    matrix of examples 
-      y : (array_like Shape (m,))    target value of each example
-      w_in : (array_like Shape (n,)) Initial values of parameters of the model
-      b_in : (scalar)                Initial value of parameter of the model
-      cost_function: function to compute cost
-      gradient_function: function to compute the gradient
-      alpha : (float) Learning rate
-      num_iters : (int) number of iterations to run gradient descent
-    Returns
-      w : (array_like Shape (n,)) Updated values of parameters of the model after
-          running gradient descent
-      b : (scalar)                Updated value of parameter of the model after
-          running gradient descent
-    """
-    
-    # number of training examples
-    m = len(X)
-    
-    # An array to store values at each iteration primarily for graphing later
-    hist={}
-    hist["cost"] = []; hist["params"] = []; hist["grads"]=[]; hist["iter"]=[];
-    
-    w = copy.deepcopy(w_in)  #avoid modifying global w within function
-    b = b_in
-    save_interval = np.ceil(num_iters/10000) # prevent resource exhaustion for long runs
 
-    print(f"Iteration Cost          w0       w1       w2       w3       b       djdw0    djdw1    djdw2    djdw3    djdb  ")
-    print(f"---------------------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|")
+# Esta versión guarda más valores y es más detallada que las versiones de asignación
+def gradient_descent_houses(X, y, w_in, b_in, cost_function, gradient_function, alpha, num_iters):
+    """
+    Realiza el descenso de gradiente por lotes para aprender theta. Actualiza theta realizando
+    num_iters pasos de gradiente con la tasa de aprendizaje alpha
+
+    Args:
+      X : (array_like Shape (m,n))    matriz de ejemplos
+      y : (array_like Shape (m,))     valor objetivo de cada ejemplo
+      w_in : (array_like Shape (n,))  Valores iniciales de los parámetros del modelo
+      b_in : (escalar)                Valor inicial del parámetro del modelo
+      cost_function: función para calcular el costo
+      gradient_function: función para calcular el gradiente
+      alpha : (float) Tasa de aprendizaje
+      num_iters : (int) número de iteraciones para ejecutar el descenso de gradiente
+    Devuelve
+      w : (array_like Shape (n,)) Valores actualizados de los parámetros del modelo después
+          de ejecutar el descenso de gradiente
+      b : (escalar)                Valor actualizado del parámetro del modelo después
+          de ejecutar el descenso de gradiente
+    """
+
+    # número de ejemplos de entrenamiento
+    m = len(X)
+
+    # Un arreglo para almacenar valores en cada iteración principalmente para graficar más tarde
+    hist = {}
+    hist["cost"] = [];
+    hist["params"] = [];
+    hist["grads"] = [];
+    hist["iter"] = [];
+
+    w = copy.deepcopy(w_in)  # evita modificar w global dentro de la función
+    b = b_in
+    save_interval = np.ceil(num_iters / 10000)  # prevenir el agotamiento de recursos para ejecuciones largas
+
+    print(
+        f"Iteración Costo         w0       w1       w2       w3       b       djdw0    djdw1    djdw2    djdw3    djdb  ")
+    print(
+        f"---------------------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|")
 
     for i in range(num_iters):
 
-        # Calculate the gradient and update the parameters
-        dj_db,dj_dw = gradient_function(X, y, w, b)   
+        # Calcular el gradiente y actualizar los parámetros
+        dj_db, dj_dw = gradient_function(X, y, w, b)
 
-        # Update Parameters using w, b, alpha and gradient
-        w = w - alpha * dj_dw               
-        b = b - alpha * dj_db               
-      
-        # Save cost J,w,b at each save interval for graphing
-        if i == 0 or i % save_interval == 0:     
+        # Actualizar parámetros usando w, b, alpha y gradiente
+        w = w - alpha * dj_dw
+        b = b - alpha * dj_db
+
+        # Guardar costo J, w, b en cada intervalo de guardado para graficar
+        if i == 0 or i % save_interval == 0:
             hist["cost"].append(cost_function(X, y, w, b))
-            hist["params"].append([w,b])
-            hist["grads"].append([dj_dw,dj_db])
+            hist["params"].append([w, b])
+            hist["grads"].append([dj_dw, dj_db])
             hist["iter"].append(i)
 
-        # Print cost every at intervals 10 times or as many iterations if < 10
-        if i% math.ceil(num_iters/10) == 0:
-            #print(f"Iteration {i:4d}: Cost {cost_function(X, y, w, b):8.2f}   ")
+        # Imprimir el costo cada cierto intervalo, 10 veces o tantas iteraciones si son < 10
+        if i % math.ceil(num_iters / 10) == 0:
             cst = cost_function(X, y, w, b)
-            print(f"{i:9d} {cst:0.5e} {w[0]: 0.1e} {w[1]: 0.1e} {w[2]: 0.1e} {w[3]: 0.1e} {b: 0.1e} {dj_dw[0]: 0.1e} {dj_dw[1]: 0.1e} {dj_dw[2]: 0.1e} {dj_dw[3]: 0.1e} {dj_db: 0.1e}")
-       
-    return w, b, hist #return w,b and history for graphing
+            print(
+                f"{i:9d} {cst:0.5e} {w[0]: 0.1e} {w[1]: 0.1e} {w[2]: 0.1e} {w[3]: 0.1e} {b: 0.1e} {dj_dw[0]: 0.1e} {dj_dw[1]: 0.1e} {dj_dw[2]: 0.1e} {dj_dw[3]: 0.1e} {dj_db: 0.1e}")
 
-def run_gradient_descent(X,y,iterations=1000, alpha = 1e-6):
+    return w, b, hist  # devolver w, b y el historial para graficar
 
-    m,n = X.shape
-    # initialize parameters
+
+def run_gradient_descent(X, y, iterations=1000, alpha=1e-6):
+    m, n = X.shape
+    # inicializar parámetros
     initial_w = np.zeros(n)
     initial_b = 0
-    # run gradient descent
-    w_out, b_out, hist_out = gradient_descent_houses(X ,y, initial_w, initial_b,
-                                               compute_cost, compute_gradient_matrix, alpha, iterations)
-    print(f"w,b found by gradient descent: w: {w_out}, b: {b_out:0.2f}")
-    
-    return(w_out, b_out, hist_out)
+    # ejecutar descenso de gradiente
+    w_out, b_out, hist_out = gradient_descent_houses(X, y, initial_w, initial_b,
+                                                     compute_cost, compute_gradient_matrix, alpha, iterations)
+    print(f"w, b encontrados por descenso de gradiente: w: {w_out}, b: {b_out:0.2f}")
+
+    return (w_out, b_out, hist_out)
+
 
 # compact extaction of hist data
 #x = hist["iter"]
@@ -476,15 +485,15 @@ def run_gradient_descent(X,y,iterations=1000, alpha = 1e-6):
 
 #bs = np.array([ p[1] for p in hist["params"]]) 
 
-def run_gradient_descent_feng(X,y,iterations=1000, alpha = 1e-6):
-    m,n = X.shape
-    # initialize parameters
+def run_gradient_descent_feng(X, y, iterations=1000, alpha=1e-6):
+    m, n = X.shape
+    # inicializar parámetros
     initial_w = np.zeros(n)
     initial_b = 0
-    # run gradient descent
-    w_out, b_out, hist_out = gradient_descent(X ,y, initial_w, initial_b,
+    # ejecutar descenso de gradiente
+    w_out, b_out, hist_out = gradient_descent(X, y, initial_w, initial_b,
                                                compute_cost, compute_gradient_matrix, alpha, iterations)
-    print(f"w,b found by gradient descent: w: {w_out}, b: {b_out:0.4f}")
+    print(f"w, b encontrados por descenso de gradiente: w: {w_out}, b: {b_out:0.4f}")
     
     return(w_out, b_out)
 
@@ -540,7 +549,7 @@ def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, 
         if i% math.ceil(num_iters/10) == 0:
             #print(f"Iteration {i:4d}: Cost {cost_function(X, y, w, b):8.2f}   ")
             cst = cost_function(X, y, w, b)
-            print(f"Iteration {i:9d}, Cost: {cst:0.5e}")
+            print(f"Iteración {i:9d}, Costo: {cst:0.5e}")
     return w, b, hist #return w,b and history for graphing
 
 def load_house_data():
